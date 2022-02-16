@@ -28,7 +28,17 @@ Mostly functional, complete (c. 1990) gui toolkit
    #+BEGIN_SRC bash
      apt-get install xfonts-100dpi
    #+END_SRC
-
+   On Arch Linux:
+   #+BEGIN_SRC bash
+     pacman -S xorg-xfontsel xorg-mkfontscale xorg-fonts-100dpi
+     cd /usr/share/fonts/100dpi/
+     mkfontdir
+     xset +fp /usr/share/fonts/100dpi/
+     xset fp rehash
+     # check installed fonts:
+     xfontsel 
+   #+END_SRC
+   
 
 ** Installing/Running
 
