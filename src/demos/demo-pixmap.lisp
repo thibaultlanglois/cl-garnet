@@ -34,12 +34,12 @@
 ;;    (common-lisp-user::garnet-load "ps:ps-loader"))
 
 (declaim (special COLOR-PROP CHANGER W A FEED-RECT
-		  MY-SQUARE FEED-RECT COLOR-SELECTION-WINDOW COLOR-SELECTION-AGGREGATE COLOR-BOX
+		  MY-SQUARE COLOR-SELECTION-WINDOW COLOR-SELECTION-AGGREGATE COLOR-BOX
 		  MY-WHITE-FILL COLOR-BOXES LABEL-TEXTS COLOR-PROP
 		  PIXMAP-WINDOW PIXMAP-AGGREGATE READ-SAVE CHANGER))
 
-(defvar the-array)
-(defvar *pm*) (defvar *pixmap-window*) (defvar *w*)
+(defvar pixmap-demo-virtual-aggregate)
+(defvar *pm*) (defvar *pixmap-window*) (defvar *virtual-aggregate-window*)
 (defvar *input-file-name-box*)
 (defvar *output-file-name-box*)
 (defvar *square* 6)
@@ -63,10 +63,16 @@
 	(selected-obj (g-value color-prop :feedback :obj-over)))
     (when selected-obj
       (let ((newfill  (g-value selected-obj :filling-style)))
-	(opal:do-in-clip-rect (x y the-array xy)
+        (format t "Type of pixarray: ~A~%" (type-of pixarray))
+        (format t "Type of pixmap-demo-virtual-aggregate: ~A~%" (type-of pixmap-demo-virtual-aggregate))
+        (format t "Type of selected object ~A~%" (type-of selected-obj))
+        (format t "newfill: ~A~%" newfill)
+	(opal:do-in-clip-rect (x y pixmap-demo-virtual-aggregate xy)
+          (format t "x:~A y:~A val: ~A~%" x y (g-value newfill :foreground-color :colormap-index))
 	  (setf (aref pixarray x y)
                 (g-value newfill :foreground-color :colormap-index))
-	  (opal:change-item the-array newfill x y))
+          ;; what does change-item do ?
+	  (opal:change-item pixmap-demo-virtual-aggregate newfill x y))
 	(opal:update *pixmap-window* t)))))
 
 (defun find-fill-style (index)
@@ -85,38 +91,44 @@
 	(s-value *pm* :image (opal:read-xpm-file filename))
 	(let* ((pixarray (g-value *pm* :pixarray))
 	       (dimensions (array-dimensions pixarray)))
-	  (unless (equal dimensions (g-value the-array :array-length))
+          (format t "in do-read. pixarray ~A dimensions ~A~%" (type-of pixarray) dimensions)
+          (format t "in do-read. pixmap-demo-virtual-aggregate ~A ~A~%"
+                  pixmap-demo-virtual-aggregate
+                  (g-value pixmap-demo-virtual-aggregate :array-length))
+	  (unless (equal dimensions (g-value pixmap-demo-virtual-aggregate :array-length))
 	    (s-value changer :window nil)
 	    (opal:remove-component a feed-rect)
-	    (opal:destroy *w*)
-	    (setq the-array
+	    (opal:destroy *virtual-aggregate-window*)
+	    (setq pixmap-demo-virtual-aggregate
 		  (create-instance nil opal:virtual-aggregate
 		    (:item-prototype my-square)
 		    (:point-to-rank #'my-point-to-rank)
 		    (:item-array (make-array dimensions :initial-element opal:white-fill))))
-	    (setq *w*
+	    (setq *virtual-aggregate-window*
 		  (create-instance 'w inter:interactor-window
 		    (:title "Virtual aggregate window")
 		    (:left 320) (:top 5)
-		    (:width (g-value the-array :width))
-		    (:height (g-value the-array :height))
+		    (:width (g-value pixmap-demo-virtual-aggregate :width))
+		    (:height (g-value pixmap-demo-virtual-aggregate :height))
 		    (:aggregate (create-instance 'a opal:aggregate))))
 	    (opal:add-component a feed-rect)
-	    (opal:update *w*)
-	    (s-value changer :window *w*)
-	    (s-value changer :start-where (list :in the-array))
-	    (opal:add-component (g-value *w* :aggregate) the-array))
+	    (opal:update *virtual-aggregate-window*)
+	    (s-value changer :window *virtual-aggregate-window*)
+	    (s-value changer :start-where (list :in pixmap-demo-virtual-aggregate))
+	    (opal:add-component (g-value *virtual-aggregate-window* :aggregate) pixmap-demo-virtual-aggregate))
 	  (dotimes (j (second dimensions))
 	    (dotimes (i (first dimensions))
-	      (opal:change-item the-array (find-fill-style (aref pixarray i j)) i j)))
-	  (opal:update *w*)
+	      (opal:change-item pixmap-demo-virtual-aggregate
+                                (find-fill-style (aref pixarray i j))
+                                i j)))
+	  (opal:update *virtual-aggregate-window*)
 	  (opal:update *pixmap-window*)
 	  (message " Done~%")))
       (message "File ~A does not exist.~%" filename)))
 
 
 (defun Do-Go (&key dont-enter-main-event-loop double-buffered-p)
-  (setq the-array
+  (setq pixmap-demo-virtual-aggregate
     (create-instance nil opal:virtual-aggregate
       (:item-prototype my-square)
       (:point-to-rank #'my-point-to-rank)
@@ -129,8 +141,8 @@
     (:width  192)
     (:height 192)
     (:aggregate (create-instance 'a opal:aggregate)))
-  (setq *w* w)
-  (opal:add-component a the-array)
+  (setq *virtual-aggregate-window* w)
+  (opal:add-component a pixmap-demo-virtual-aggregate)
   (opal:add-component a
      (create-instance 'feed-rect opal:rectangle
         (:fast-redraw-p t)
@@ -344,7 +356,7 @@
   (create-instance 'CHANGER inter:two-point-interactor
      (:start-event :leftdown)
      (:continuous T)
-     (:start-where `(:in ,the-array))
+     (:start-where `(:in ,pixmap-demo-virtual-aggregate))
      (:window w)
      (:feedback-obj feed-rect)
      (:final-function #'Change-rectangle-color))
