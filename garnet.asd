@@ -35,11 +35,16 @@
   :author "CMU Garnet Team (plus various others, see LICENSE)"
   :description " GUI toolkit (c. 1990 look/feel)"
   :components
-  ((:file "post-processing"
+  (#+nil
+   (:file "post-processing"
 	  :depends-on
 	  (opal inter ps aggregadgets gadgets debug protected-eval
-		gesture demos garnet-desktop-lab lapidary c32 gilt
-		multi-garnet lapidary cl-processing))
+		gesture demos garnet-desktop-lab
+                ;; lapidary c32
+                gilt
+		multi-garnet
+                ;; lapidary
+                cl-processing))
    (:file "package")
    (:file "clx-compatability" :depends-on (package))
    (:module utils
@@ -302,6 +307,7 @@
 	     (:file "garnet-desktop-lab")
 	     (:file "xomax")
 	     (:file "app-launcher")))
+   #+nil
    (:module lapidary2
    	    :pathname "src/lapidary"
    	    :depends-on (utils)
@@ -310,6 +316,7 @@
 	     (:file "lapidary-functions-loader")
    	     (:file "lapidary-functions")
    	     (:file "mouse-bindings")))
+   #+nil
    (:module c32
    	    :pathname "src/c32"
    	    :depends-on (:gilt)
@@ -351,6 +358,7 @@
 	     (:file "value-control")
 	     (:file "enable-control")
 	     (:file "error-check")))
+   #+nil
    (:module multi-garnet
 	    :pathname "multi-garnet"
 	    :depends-on (lapidary)
@@ -363,6 +371,7 @@
 	     ;; examples fires off the demo app.
 	     ;; (:file "examples")
 	     ))
+   #+nil
    (:module lapidary
 	    :pathname "src/lapidary"
 	    :depends-on (lapidary2 gadgets gilt c32)
@@ -434,6 +443,7 @@
 	     (:file "by-demo")
 	     (:file "interactors")
 	     (:file "interactors-menu")))
+   #+nil
    (:module contrib
 	    :pathname "src/contrib"
 	    :depends-on (:debug :lapidary)
@@ -442,6 +452,7 @@
 	     (:file "plot-2d")
 	     (:file "plotxy")
 	     (:file "graph-editor/graph-editor")))
+   #+nil
    (:module cl-processing
 	    :pathname "src/cl-processing"
 	    :depends-on (:debug :lapidary)
@@ -449,6 +460,7 @@
 	    ((:file "package")
 	     (:file "main")
 	     (:file "console")))
+   #+nil
    (:module last
 	    :pathname ""
 	    :depends-on (:utils :kr :gem :opal :inter :ps :aggregadgets
