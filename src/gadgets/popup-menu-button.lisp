@@ -179,6 +179,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+(defparameter common-lisp-user::Garnet-Bitmap-Pathname
+  (make-pathname :directory '(:absolute "home" "tl" "comp" "lang" "lisp" "code" "garnet-tl" "lib" "bitmaps")))
+
 (create-instance 'lines-bitmap opal:bitmap
     (:image (opal:read-image (merge-pathnames "pop-up-icon-no-border.bm"
 					      common-lisp-user::Garnet-Bitmap-Pathname))))

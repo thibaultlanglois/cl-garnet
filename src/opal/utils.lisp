@@ -96,7 +96,9 @@
 	(T (setf extra-args (append extra-args (list arg1 arg2))))))
     (values quit gc verbose libfile flush-source-info? extra-args)))
 
-
+;;; I think this feature does not work. 
+;;; TODO: check MAKE-IMAGE functionality
+#+ignore
 (defun make-image (filename &rest args)
     (error "Don't know how to automatically save an image for this
             lisp.  Please consult your lisp's user manual for
