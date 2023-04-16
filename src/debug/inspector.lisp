@@ -11,9 +11,9 @@
 ;;; Designed and implemented by Brad Myers
 
 
-(defparameter *process-with-main-event-loop* nil)
 
 (in-package :garnet-debug)
+(defparameter *process-with-main-event-loop* nil)
 
 (eval-when (:execute :load-toplevel :compile-toplevel)
   (export '(inspector inspect-next-inter Find-Slot-Starting-With
